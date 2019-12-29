@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>GoldmanStats</title>
+
+</head>
+<body>
+
+  <p id="result"></p>
+  <p id="result2"></p>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Base64/1.1.0/base64.js" integrity="sha256-RTwZCCKWANhpTC/+yrXMuIgzwkcwugi61JTBrR9ujno=" crossorigin="anonymous"></script>
+
+  <script>
+    const request = new XMLHttpRequest();
+
+    request.open('GET', 'https://api.github.com/repos/NoobiCodi/tiksi/contents/README.md?ref=master');
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        const response = JSON.parse(this.responseText);
+        const decodedContent = atob(response.content);
+
+        displayData(decodedContent);
+      }
+    };
+
+    function displayData(input) {
+      document.getElementById('result2').innerHTML = input;
+    }
+
+    request.send();
+  </script>
+
+</body>
+</html>
