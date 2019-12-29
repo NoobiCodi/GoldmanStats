@@ -116,14 +116,26 @@
         }
       });
 
-      let text = 
-`Goldman Stats
-Date : ${myobj.date}`;
+      let text = `
 
-      console.log(JSON.stringify(finalObject, null, 4));
-      console.log(myobj);
+▆▇ Goldman Stats ▇▆
+════════════════════
+Date : 
+${myobj.date}
+Balance :
+${myobj.balance}
+Power :
+${myobj.power}
+Nombre de pillages :
+${myobj.nombre_de_pillages}
+Membres : 
+${myobj.membres}
+Nombre de recrues : 
+${myobj.nombre_de_recrues}
 
-      htmlEl.innerHTML = text.replace('\n', '<br/>');
+`.trim();
+
+      htmlEl.innerHTML = text.replace(/\n/g, '<br/>');
     }
 
     request.send();
