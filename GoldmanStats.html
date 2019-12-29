@@ -8,30 +8,122 @@
 
   <title>GoldmanStats</title>
 
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+  </style>
+
 </head>
 <body>
 
-  <p id="result"></p>
-  <p id="result2"></p>
-  
+  <h1>GoldmanStats</h1>
+  <div id="result"></div>
+  <hr>
+  <button onclick="generate()">Generate</button>
+  <p id="toGenerate"></p>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Base64/1.1.0/base64.js" integrity="sha256-RTwZCCKWANhpTC/+yrXMuIgzwkcwugi61JTBrR9ujno=" crossorigin="anonymous"></script>
 
   <script>
     const request = new XMLHttpRequest();
 
-    request.open('GET', 'https://api.github.com/repos/NoobiCodi/tiksi/contents/README.md?ref=master');
+    let inp = '';
+
+    request.open('GET', 'https://api.github.com/repos/NoobiCodi/GoldmanStats/contents/stats.csv?ref=master');
 
     request.onreadystatechange = function() {
       if (this.readyState === 4 && this.status === 200) {
         const response = JSON.parse(this.responseText);
         const decodedContent = atob(response.content);
 
+        inp = decodedContent;
+
         displayData(decodedContent);
       }
     };
 
     function displayData(input) {
-      document.getElementById('result2').innerHTML = input;
+      const el = document.getElementById('result');
+      const lines = input.split('\n');
+
+      const tableLines = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const idArray = lines[i].split(',');
+
+        const elements = [];
+
+        idArray.forEach(element => {
+          if (element !== "") {
+            elements.push(i == 0 ? /*html*/`
+              <th>${element.split('_').join(' ')}</th>
+            `.trim() : /*html*/`
+              <td>${element}</td>
+            `.trim());
+          }
+        });
+
+        const hatemel = /*html*/`<tr>${elements.join('')}</tr>`.trim();
+
+        tableLines.push(hatemel);
+      }
+
+      const html = /*html*/`
+        <table>
+          ${tableLines.join('')}
+        </table>
+      `;
+
+      el.innerHTML = html;
+    }
+
+    function generate() {
+      const htmlEl = document.getElementById('toGenerate');
+      const lines = inp.split('\n');
+
+      let finalObject = {};
+      let temp = [];
+      let myobj;
+
+      lines.forEach((element, i) => {
+        const ids = element.split(',');
+
+        if (element !== '') {
+          if (i == 0) {
+            temp = ids;
+          } else if (i == lines.length - 1) {
+            finalObject[ids[0]] = {};
+            
+            myobj = finalObject[ids[0]];
+
+            ids.forEach((e, j) => {
+              finalObject[ids[0]][temp[j]] = e;
+            });
+          }
+        }
+      });
+
+      let text = 
+`Goldman Stats
+Date : ${myobj.date}`;
+
+      console.log(JSON.stringify(finalObject, null, 4));
+      console.log(myobj);
+
+      htmlEl.innerHTML = text.replace('\n', '<br/>');
     }
 
     request.send();
